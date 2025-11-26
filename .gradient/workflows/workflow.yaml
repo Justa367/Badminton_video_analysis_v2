@@ -24,18 +24,18 @@ jobs:
     with:
       image: pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
       script: |
-        echo "=== Setting PYTHONPATH ==="
+        echo "=== Setting PYTHONPATH so imports work ==="
         export PYTHONPATH="/inputs/repo"
 
-        echo "=== Files in repo ==="
+        echo "=== Listing repo ==="
         ls -R /inputs/repo
 
-        echo "=== Starting Tracker ==="
+        echo "=== Starting Badminton Tracker ==="
         python /inputs/repo/player_shuttle_tracker/main_tracker.py \
           --input "/inputs/repo/clip_3.mp4" \
           --output "/outputs/out.mp4"
 
       outputs:
-        output_video:
+        result_video:
           type: file
           path: /outputs/out.mp4
