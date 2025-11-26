@@ -6,34 +6,27 @@ on:
 jobs:
   CloneRepo:
     uses: git-checkout@v1
-    resources:
-      instance-type: C5
     outputs:
       repo:
         type: volume
     with:
-      url: context.event.github.url
+      url: https://github.com/Justa367/Badminton_video_analysis
 
   RunTracker:
+    needs: CloneRepo
     uses: script@v1
-    needs:
-      - CloneRepo
     resources:
-      instance-type: P5000
+      instance-type: P5000   # RTX5000 GPU
     inputs:
       repo: CloneRepo.outputs.repo
     with:
-      image: pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
+      image: pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime
       script: |
-        echo "=== PYTHONPATH ==="
-        export PYTHONPATH="/inputs/repo"
+        echo "=== START ==="
 
-        echo "=== Running tracker ==="
+        # uruchomienie trackera z prawidłową ścieżką do wideo
         python /inputs/repo/player_shuttle_tracker/main_tracker.py \
           --input "/inputs/repo/clip_3.mp4" \
           --output "/outputs/out.mp4"
 
-      outputs:
-        outvideo:
-          type: file
-          path: /outputs/out.mp4
+        echo "=== FINISHED ==="
