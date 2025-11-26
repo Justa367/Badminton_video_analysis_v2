@@ -25,7 +25,19 @@ jobs:
     with:
       image: pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime
       script: |
-        echo "=== START ==="
+        echo "=== Installing dependencies ==="
+        pip install --upgrade pip
+
+        # OpenCV (headless = brak GUI, mniej błędów)
+        pip install opencv-python-headless
+
+        # Twoje modele YOLO
+        pip install ultralytics
+
+        # inne wymagane
+        pip install numpy matplotlib
+
+        echo "=== Running Badminton Tracker ==="
 
         python /inputs/repo/player_shuttle_tracker/main_tracker.py \
           --input "/inputs/repo/clip_3.mp4" \
