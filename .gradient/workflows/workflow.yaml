@@ -18,26 +18,29 @@ jobs:
     needs:
       - CloneRepo
     resources:
-      instance-type: P5000   # GPU RTX5000
+      instance-type: P5000
     inputs:
       repo: CloneRepo.outputs.repo
     uses: script@v1
     with:
       image: pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
       script: |
-        echo "=== Installing system dependencies ==="
+        echo "=== Installing system libs ==="
         apt-get update -y
         apt-get install -y libgl1 libglib2.0-0
 
-        echo "=== Updating pip ==="
+        echo "=== Pip upgrade ==="
         pip install --upgrade pip
 
-        echo "=== Installing Python deps ==="
+        echo "=== Python dependencies ==="
         pip install numpy opencv-python-headless matplotlib
         pip install ultralytics==8.1.0
         pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
-        echo "=== RUNNING Badminton Tracker ==="
+        echo "=== Fix PYTHONPATH ==="
+        export PYTHONPATH="/inputs/repo"
+
+        echo "=== RUNNING TRACKER ==="
         python /inputs/repo/player_shuttle_tracker/main_tracker.py \
           --input "/inputs/repo/clip_3.mp4" \
           --output "/outputs/out.mp4"
