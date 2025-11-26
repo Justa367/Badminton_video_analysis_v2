@@ -18,17 +18,27 @@ jobs:
     needs:
       - CloneRepo
     resources:
-      instance-type: A4000   # stabilna maszyna GPU
+      instance-type: A4000
     inputs:
       repo: CloneRepo.outputs.repo
     uses: script@v1
     with:
       image: pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime
       script: |
-        echo "=== START ==="
+        echo "=== INSTALLING ==="
 
         pip install --upgrade pip
-        pip install opencv-python-headless ultralytics numpy matplotlib
+        
+        # REMOVE BROKEN CV2 WITH GUI
+        pip uninstall -y opencv-python opencv-contrib-python || true
+        
+        # INSTALL HEADLESS VERSION
+        pip install opencv-python-headless
+        
+        # REST OF DEPENDENCIES
+        pip install numpy matplotlib ultralytics scipy
+
+        echo "=== RUNNING TRACKER ==="
 
         python /inputs/repo/player_shuttle_tracker/main_tracker.py \
           --input "/inputs/repo/clip_3.mp4" \
