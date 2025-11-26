@@ -25,10 +25,11 @@ jobs:
     with:
       image: pytorch/pytorch:2.1.0-cpu
       script: |
-        echo "=== Install Dependencies ==="
+        echo "=== Installing dependencies ==="
+        pip install --upgrade pip
         pip install numpy opencv-python matplotlib ultralytics
 
-        echo "=== Run tracker ==="
+        echo "=== Running tracker ==="
         python /inputs/repo/player_shuttle_tracker/main_tracker.py \
           --input "/inputs/repo/clip_3.mp4" \
           --output "/outputs/out.mp4"
