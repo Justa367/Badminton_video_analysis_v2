@@ -15,27 +15,25 @@ jobs:
       url: context.event.github.url
 
   RunTracker:
-    needs: CloneRepo
     uses: script@v1
+    needs:
+      - CloneRepo
     resources:
-      instance-type: P5000   # RTX5000 GPU
+      instance-type: P5000
     inputs:
       repo: CloneRepo.outputs.repo
     with:
       image: pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
       script: |
-        echo "=== Setting PYTHONPATH so imports work ==="
+        echo "=== PYTHONPATH ==="
         export PYTHONPATH="/inputs/repo"
 
-        echo "=== Listing repo ==="
-        ls -R /inputs/repo
-
-        echo "=== Starting Badminton Tracker ==="
+        echo "=== Running tracker ==="
         python /inputs/repo/player_shuttle_tracker/main_tracker.py \
           --input "/inputs/repo/clip_3.mp4" \
           --output "/outputs/out.mp4"
 
       outputs:
-        result_video:
+        outvideo:
           type: file
           path: /outputs/out.mp4
