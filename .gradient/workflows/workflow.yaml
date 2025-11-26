@@ -1,7 +1,8 @@
-'on':
+on:
   github:
     branches:
       only: main
+
 jobs:
   CloneRepo:
     resources:
@@ -12,7 +13,8 @@ jobs:
     uses: git-checkout@v1
     with:
       url: context.event.github.url
-  HelloWorld:
+
+  RunTracker:
     resources:
       instance-type: C5
     needs:
@@ -21,7 +23,12 @@ jobs:
       repo: CloneRepo.outputs.repo
     uses: script@v1
     with:
-      script: python /inputs/repo/hello.py
-      image: tensorflow/tensorflow:1.14.0-py3
+      image: pytorch/pytorch:2.1.0-cpu
+      script: |
+        echo "=== Install Dependencies ==="
+        pip install numpy opencv-python matplotlib ultralytics
 
-
+        echo "=== Run tracker ==="
+        python /inputs/repo/player_shuttle_tracker/main_tracker.py \
+          --input "/inputs/repo/clip_3.mp4" \
+          --output "/outputs/out.mp4"
