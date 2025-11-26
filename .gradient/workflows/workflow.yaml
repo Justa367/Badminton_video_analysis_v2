@@ -15,32 +15,23 @@ jobs:
       url: context.event.github.url
 
   RunTracker:
-    resources:
-      instance-type: P5000
     needs:
       - CloneRepo
+    resources:
+      instance-type: A4000   # stabilna maszyna GPU
     inputs:
       repo: CloneRepo.outputs.repo
     uses: script@v1
     with:
       image: pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime
       script: |
-        echo "=== Installing dependencies ==="
+        echo "=== START ==="
+
         pip install --upgrade pip
-
-        # OpenCV (headless = brak GUI, mniej błędów)
-        pip install opencv-python-headless
-
-        # Twoje modele YOLO
-        pip install ultralytics
-
-        # inne wymagane
-        pip install numpy matplotlib
-
-        echo "=== Running Badminton Tracker ==="
+        pip install opencv-python-headless ultralytics numpy matplotlib
 
         python /inputs/repo/player_shuttle_tracker/main_tracker.py \
           --input "/inputs/repo/clip_3.mp4" \
           --output "/outputs/out.mp4"
 
-        echo "=== END ==="
+        echo "=== FINISHED ==="
