@@ -15,21 +15,25 @@ jobs:
       url: context.event.github.url
 
   RunTracker:
-    resources:
-      instance-type: C5
     needs:
       - CloneRepo
+    resources:
+      instance-type: P5000   # RTX5000 GPU
     inputs:
       repo: CloneRepo.outputs.repo
     uses: script@v1
     with:
-      image: pytorch/pytorch:2.1.0-cpu
+      image: pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
       script: |
-        echo "=== Installing dependencies ==="
+        echo "=== Updating pip ==="
         pip install --upgrade pip
-        pip install numpy opencv-python matplotlib ultralytics
 
-        echo "=== Running tracker ==="
+        echo "=== Installing dependencies ==="
+        pip install numpy opencv-python matplotlib
+        pip install ultralytics==8.1.0
+        pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+        echo "=== RUNNING Badminton Tracker ==="
         python /inputs/repo/player_shuttle_tracker/main_tracker.py \
           --input "/inputs/repo/clip_3.mp4" \
           --output "/outputs/out.mp4"
